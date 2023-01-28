@@ -151,6 +151,7 @@ class ClockManager {
 
 int main(void) {
   SetupClock(170000000);
+  usb_init_rcc();
 
   DigitalOut power_led{PB_5, 1};
 

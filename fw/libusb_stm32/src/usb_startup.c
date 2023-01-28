@@ -270,9 +270,11 @@ void usb_init_rcc (void) {
 	_BST(RCC->CR2, RCC_CR2_HSI48ON);
 	_WBS(RCC->CR2, RCC_CR2_HSI48RDY);
 #elif defined(STM32G4) || defined(TARGET_STM32G4)
+#if 0
     /* using HSI16 as AHB/CPU clock, HSI48 as USB PHY clock */
     _BST(RCC->CRRCR, RCC_CRRCR_HSI48ON);
     _WBS(RCC->CRRCR, RCC_CRRCR_HSI48RDY);
+#endif
 #elif defined(STM32WB55xx)
     /* using HSI16 as AHB/CPU clock, HSI48 as USB PHY clock */
     _BST(RCC->CR, RCC_CR_HSION);
