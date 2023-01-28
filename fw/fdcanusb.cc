@@ -31,6 +31,7 @@
 #include "fw/stm32g4_flash.h"
 #include "fw/stm32g4_async_usb_cdc.h"
 #include "fw/uuid.h"
+#include "usb.h"
 
 namespace {
 namespace base = mjlib::base;
