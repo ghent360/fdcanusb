@@ -18,8 +18,9 @@ load("//tools/workspace:github_archive.bzl", "github_archive")
 
 def rules_mbed_repository():
     github_archive(
-        name = "com_github_mjbots_rules_mbed",
-        repo = "mjbots/rules_mbed",
+        name = "com_github_ghent360_rules_mbed",
+        repo = "ghent360/rules_mbed",
         commit = "4a7094b9082625de3b979eae7f5df705cf110695",
         sha256 = "18335520b479ae6948df2657ca24a0206b93595ae048bbcfef87af5302b2e15e",
+        local_override = "../../nrf24/rules_mbed",
     )

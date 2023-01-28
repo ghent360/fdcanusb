@@ -23,14 +23,15 @@ load("//tools/workspace:default.bzl", "add_default_repositories")
 
 add_default_repositories()
 
-load("@com_github_mjbots_rules_mbed//:rules.bzl", mbed_register = "mbed_register")
+load("@com_github_ghent360_rules_mbed//:rules.bzl", mbed_register = "mbed_register")
 
 mbed_register(
     config = {
         "mbed_target": "targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE",
         "mbed_config": {
-            "MBED_CONF_RTOS_PRESENT": "0",
-            "DEVICE_STDIO_MESSAGES": "0",
+            "MBED_CONF_RTOS_PRESENT": "<undefined>",
+            "DEVICE_STDIO_MESSAGES": "<undefined>",
+            "HSE_VALUE": "24000000",
         },
     },
 )
