@@ -15,7 +15,7 @@
 
 #include "stm32_compat.h"
 
-static void cdc_init_rcc (void) {
+void usb_init_rcc (void) {
 #if defined(STM32L0)
     _BST(RCC->APB1ENR, RCC_APB1ENR_PWREN);
     _BMD(PWR->CR, PWR_CR_VOS, PWR_CR_VOS_0);
@@ -66,7 +66,8 @@ static void cdc_init_rcc (void) {
     _BST(GPIOA->AFR[1], (0x0A << 12) | (0x0A << 16));
     _BMD(GPIOA->MODER, (0x03 << 22) | (0x03 << 24), (0x02 << 22) | (0x02 << 24));
 
-#elif defined(STM32F103x6)
+#elif defined(STM32F103x6) || defined(TARGET_STM32F103C8)
+#if 0
     /* set flash latency 1WS */
     _BMD(FLASH->ACR, FLASH_ACR_LATENCY, FLASH_ACR_LATENCY_1);
     /* use PLL 48MHz clock from 8Mhz HSI */
@@ -78,7 +79,7 @@ static void cdc_init_rcc (void) {
     /* switch to PLL */
     _BMD(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_PLL);
     _WVL(RCC->CFGR, RCC_CFGR_SWS, RCC_CFGR_SWS_PLL);
-
+#endif
 #elif defined(STM32F303xE)
     /* set flash latency 1WS */
     _BMD(FLASH->ACR, FLASH_ACR_LATENCY, FLASH_ACR_LATENCY_1);
@@ -131,7 +132,9 @@ static void cdc_init_rcc (void) {
 
 
 #elif defined(STM32F429xx) || defined(STM32F405xx) \
-    || defined(STM32F401xC) || defined(STM32F401xE)  || defined(STM32F411xE)
+    || defined(STM32F401xC) || defined(STM32F401xE)  || defined(STM32F411xE) \
+    || defined(TARGET_STM32F407)
+#if 0 // Main clock is already initialized.
     /* set flash latency 2WS */
     _BMD(FLASH->ACR, FLASH_ACR_LATENCY, FLASH_ACR_LATENCY_2WS);
     /* setting up PLL 16MHz HSI, VCO=144MHz, PLLP = 72MHz PLLQ = 48MHz  */
@@ -144,6 +147,7 @@ static void cdc_init_rcc (void) {
     /* switching to PLL */
     _BMD(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_PLL);
     _WVL(RCC->CFGR, RCC_CFGR_SWS, RCC_CFGR_SWS_PLL);
+#endif    
     #if defined(USBD_PRIMARY_OTGHS)
     /* enabling GPIOB and setting PB13, PB14 and PB15 to AF11 (USB_OTG2FS) */
     _BST(RCC->AHB1ENR, RCC_AHB1ENR_GPIOBEN);
@@ -265,7 +269,7 @@ static void cdc_init_rcc (void) {
     /* use HSI48 as clock incl. USB PHY clock, no PLL */
 	_BST(RCC->CR2, RCC_CR2_HSI48ON);
 	_WBS(RCC->CR2, RCC_CR2_HSI48RDY);
-#elif defined(STM32G4)
+#elif defined(STM32G4) || defined(TARGET_STM32G4)
     /* using HSI16 as AHB/CPU clock, HSI48 as USB PHY clock */
     _BST(RCC->CRRCR, RCC_CRRCR_HSI48ON);
     _WBS(RCC->CRRCR, RCC_CRRCR_HSI48RDY);
@@ -300,12 +304,4 @@ static void cdc_init_rcc (void) {
 #else
     #error Not supported
 #endif
-}
-
-void __libc_init_array(void) {
-
-}
-
-void SystemInit(void) {
-    cdc_init_rcc();
 }
