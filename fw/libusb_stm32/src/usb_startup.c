@@ -303,6 +303,7 @@ void usb_init_rcc (void) {
     _BST(RCC->AHB4ENR, RCC_AHB4ENR_GPIOAEN);
     _BMD(GPIOA->MODER, (0x03 << 22) | (0x03 << 24), (0x02 << 22) | (0x02 << 24));
     _BST(GPIOA->AFR[1], (0x0A << 12) | (0x0A << 16));
+#elif defined(TARGET_STM32G0)
 #else
     #error Not supported
 #endif

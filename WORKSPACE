@@ -27,11 +27,12 @@ load("@com_github_ghent360_rules_mbed//:rules.bzl", mbed_register = "mbed_regist
 
 mbed_register(
     config = {
-        "mbed_target": "targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE",
+        "mbed_target": "targets/TARGET_STM/TARGET_STM32G0/TARGET_STM32G0B1xE/TARGET_NUCLEO_G0B1RE",
         "mbed_config": {
             "MBED_CONF_RTOS_PRESENT": "<undefined>",
             "DEVICE_STDIO_MESSAGES": "<undefined>",
-            "HSE_VALUE": "24000000",
+            "CLOCK_SOURCE":"USE_PLL_HSE_EXTC",
+            "HSE_VALUE": "8000000",
         },
     },
 )
