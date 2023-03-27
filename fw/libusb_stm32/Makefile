@@ -297,3 +297,9 @@ stm32f411xe stm32f411e-disco: clean
 						LDSCRIPT='demo/stm32f401xe.ld' \
 						DEFINES='STM32F4 STM32F411xE USBD_SOF_DISABLED' \
 						CFLAGS='-mcpu=cortex-m4'
+
+stm32g0b1xe: clean
+	@$(MAKE) demo STARTUP='$(CMSISDEV)/ST/STM32G0xx/Source/Templates/gcc/startup_stm32g0b1xx.s' \
+						LDSCRIPT='demo/stm32g0b1xe.ld' \
+						DEFINES='STM32G0 STM32G0B1xx USBD_SOF_DISABLED' \
+						CFLAGS='-mcpu=cortex-m0plus'

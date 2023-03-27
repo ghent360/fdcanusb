@@ -21,9 +21,9 @@ namespace fw {
 class MillisecondTimer {
  public:
   MillisecondTimer() {
-    __HAL_RCC_TIM5_CLK_ENABLE();
+    __HAL_RCC_TIM2_CLK_ENABLE();
 
-    handle_.Instance = TIM5;
+    handle_.Instance = TIM2;
     handle_.Init.Period = 0xFFFFFFFF;
     handle_.Init.Prescaler =
         (uint32_t)(SystemCoreClock / 1000000U) - 1;  // 1 us tick
@@ -36,11 +36,11 @@ class MillisecondTimer {
   }
 
   uint32_t read_ms() {
-    return TIM5->CNT / 1000;
+    return TIM2->CNT / 1000;
   }
 
   uint32_t read_us() {
-    return TIM5->CNT;
+    return TIM2->CNT;
   }
 
   void wait_ms(uint32_t delay_ms) {
@@ -48,10 +48,10 @@ class MillisecondTimer {
   }
 
   void wait_us(uint32_t delay_us) {
-    uint32_t current = TIM5->CNT;
+    uint32_t current = TIM2->CNT;
     uint32_t elapsed = 0;
     while (true) {
-      const uint32_t next = TIM5->CNT;
+      const uint32_t next = TIM2->CNT;
       elapsed += next - current;
       // We check delay_us + 1 since we don't know where in the
       // current microsecond we started.

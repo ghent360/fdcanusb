@@ -35,9 +35,19 @@ uint32_t GetUartTxRequest(USART_TypeDef* uart) {
     case UART_1: return DMA_REQUEST_USART1_TX;
     case UART_2: return DMA_REQUEST_USART2_TX;
     case UART_3: return DMA_REQUEST_USART3_TX;
+#if defined(TARGET_STM32G4)
     case UART_4: return DMA_REQUEST_UART4_TX;
-#if defined (UART5)
+#elif defined(TARGET_STM32G0)
+    case UART_4: return DMA_REQUEST_USART4_TX;
+#endif
+#if defined(UART5)
     case UART_5: return DMA_REQUEST_UART5_TX;
+#endif
+#if defined(USART5)
+    case UART_5: return DMA_REQUEST_USART5_TX;
+#endif
+#if defined(USART6)
+    case UART_6: return DMA_REQUEST_USART6_TX;
 #endif
   }
   mbed_die();
@@ -45,7 +55,11 @@ uint32_t GetUartTxRequest(USART_TypeDef* uart) {
 }
 
 DMA_TypeDef* GetDmaForChannel(DMA_Channel_TypeDef* dma) {
+#if defined(TARGET_STM32G4)
   return (dma > DMA1_Channel8) ? DMA2 : DMA1;
+#elif defined(TARGET_STM32G0)
+  return (dma > DMA1_Channel7) ? DMA2 : DMA1;
+#endif
 }
 
 uint32_t GetDmaSr(DMA_Channel_TypeDef* dma) {
@@ -61,9 +75,19 @@ uint32_t GetUartRxRequest(USART_TypeDef* uart) {
     case UART_1: return DMA_REQUEST_USART1_RX;
     case UART_2: return DMA_REQUEST_USART2_RX;
     case UART_3: return DMA_REQUEST_USART3_RX;
+#if defined(TARGET_STM32G4)
     case UART_4: return DMA_REQUEST_UART4_RX;
-#if defined (UART5)
+#elif defined(TARGET_STM32G0)
+    case UART_4: return DMA_REQUEST_USART4_RX;
+#endif
+#if defined(UART5)
     case UART_5: return DMA_REQUEST_UART5_RX;
+#endif
+#if defined(USART5)
+    case UART_5: return DMA_REQUEST_USART5_RX;
+#endif
+#if defined(USART6)
+    case UART_6: return DMA_REQUEST_USART6_RX;
 #endif
   }
   mbed_die();
@@ -72,6 +96,7 @@ uint32_t GetUartRxRequest(USART_TypeDef* uart) {
 
 IRQn_Type GetDmaIrq(DMA_Channel_TypeDef* dma) {
   if (dma == DMA1_Channel1) { return DMA1_Channel1_IRQn; }
+#if defined(TARGET_STM32G4)  
   if (dma == DMA1_Channel2) { return DMA1_Channel2_IRQn; }
   if (dma == DMA1_Channel3) { return DMA1_Channel3_IRQn; }
   if (dma == DMA1_Channel4) { return DMA1_Channel4_IRQn; }
@@ -88,12 +113,27 @@ IRQn_Type GetDmaIrq(DMA_Channel_TypeDef* dma) {
   if (dma == DMA2_Channel6) { return DMA2_Channel6_IRQn; }
   if (dma == DMA2_Channel7) { return DMA2_Channel7_IRQn; }
   if (dma == DMA2_Channel8) { return DMA2_Channel8_IRQn; }
+#elif defined(TARGET_STM32G0)
+  if (dma == DMA1_Channel2) { return DMA1_Channel2_3_IRQn; }
+  if (dma == DMA1_Channel3) { return DMA1_Channel2_3_IRQn; }
+  if (dma == DMA1_Channel4) { return DMA1_Ch4_7_DMA2_Ch1_5_DMAMUX1_OVR_IRQn; }
+  if (dma == DMA1_Channel5) { return DMA1_Ch4_7_DMA2_Ch1_5_DMAMUX1_OVR_IRQn; }
+  if (dma == DMA1_Channel6) { return DMA1_Ch4_7_DMA2_Ch1_5_DMAMUX1_OVR_IRQn; }
+  if (dma == DMA1_Channel7) { return DMA1_Ch4_7_DMA2_Ch1_5_DMAMUX1_OVR_IRQn; }
+
+  if (dma == DMA2_Channel1) { return DMA1_Ch4_7_DMA2_Ch1_5_DMAMUX1_OVR_IRQn; }
+  if (dma == DMA2_Channel2) { return DMA1_Ch4_7_DMA2_Ch1_5_DMAMUX1_OVR_IRQn; }
+  if (dma == DMA2_Channel3) { return DMA1_Ch4_7_DMA2_Ch1_5_DMAMUX1_OVR_IRQn; }
+  if (dma == DMA2_Channel4) { return DMA1_Ch4_7_DMA2_Ch1_5_DMAMUX1_OVR_IRQn; }
+  if (dma == DMA2_Channel5) { return DMA1_Ch4_7_DMA2_Ch1_5_DMAMUX1_OVR_IRQn; }
+#endif
 
   mbed_die();
 }
 
 IRQn_Type GetUsartIrq(USART_TypeDef* uart) {
   switch(u32(uart)) {
+#if defined(TARGET_STM32G4)
 #if defined (USART1_BASE)
     case UART_1: return USART1_IRQn;
 #endif
@@ -136,6 +176,26 @@ IRQn_Type GetUsartIrq(USART_TypeDef* uart) {
 #if defined (UART10_BASE)
     case UART_10: return UART10_IRQn;
 #endif
+#elif defined(TARGET_STM32G0)
+#if defined (USART1_BASE)
+    case UART_1: return USART1_IRQn;
+#endif
+#if defined (USART2_BASE)
+    case UART_2: return USART2_LPUART2_IRQn;
+#endif
+#if defined (USART3_BASE)
+    case UART_3: return USART3_4_5_6_LPUART1_IRQn;
+#endif
+#if defined (USART4_BASE)
+    case UART_4: return USART3_4_5_6_LPUART1_IRQn;
+#endif
+#if defined (USART5_BASE)
+    case UART_5: return USART3_4_5_6_LPUART1_IRQn;
+#endif
+#if defined (USART6_BASE)
+    case UART_6: return USART3_4_5_6_LPUART1_IRQn;
+#endif
+#endif
 }
   mbed_die();
   return {};
@@ -164,7 +224,9 @@ class Stm32G4AsyncUart::Impl {
       rx_buffer_[i] = 0xffff;
     }
 
+#if defined(TARGET_STM32G4)
     __HAL_RCC_DMAMUX1_CLK_ENABLE();
+#endif
     __HAL_RCC_DMA1_CLK_ENABLE();
     __HAL_RCC_DMA2_CLK_ENABLE();
 
@@ -185,7 +247,7 @@ class Stm32G4AsyncUart::Impl {
 
       dmamux_rx_ = [&]() {
         const auto base = (dma_rx_ < DMA2_Channel1) ? DMAMUX1_Channel0 :
-       #if defined (STM32G471xx) || defined (STM32G473xx) || defined (STM32G474xx) || defined (STM32G483xx) || defined (STM32G484xx)
+#if defined (STM32G471xx) || defined (STM32G473xx) || defined (STM32G474xx) || defined (STM32G483xx) || defined (STM32G484xx)
         DMAMUX1_Channel8;
 #elif defined (STM32G431xx) || defined (STM32G441xx) || defined (STM32GBK1CB)
         DMAMUX1_Channel6;

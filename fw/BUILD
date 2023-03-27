@@ -24,6 +24,7 @@ cc_library(
         "@mjlib//mjlib/base:visitor",
     ],
     linkstamp = "git_info_linkstamp.cc",
+    linkstatic = True,
 )
 
 mbed_binary(
@@ -54,6 +55,7 @@ mbed_binary(
         "libusb_stm32/inc/usb_std.h",
         "libusb_stm32/src/usbd_core.c",
         "libusb_stm32/src/usbd_stm32l433_devfs.c",
+        "libusb_stm32/src/usbd_stm32g0b1_devfs.c",
         "libusb_stm32/src/usb_startup.c",
     ],
     deps = [
@@ -70,7 +72,7 @@ mbed_binary(
 )
 
 OCD = (
-    "openocd -f interface/stlink.cfg -f target/stm32g4x.cfg "
+    "openocd -f interface/stlink.cfg -f target/stm32g0x.cfg "
 )
 
 genrule(

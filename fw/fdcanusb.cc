@@ -43,10 +43,18 @@ void SetupClock(int clock_rate_hz) {
 
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
 
+#if defined(TARGET_STM32G0)
+  HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
+#endif
+
   // Temporarily stop running off the PLL so we can change it.
   RCC_ClkInitStruct.ClockType      = RCC_CLOCKTYPE_SYSCLK;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+#if defined(TARGET_STM32G4)
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_6) != HAL_OK) {
+#elif defined(TARGET_STM32G0)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
+#endif
     mbed_die();
   }
 
@@ -54,6 +62,7 @@ void SetupClock(int clock_rate_hz) {
 
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSI48;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV1;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -67,13 +76,20 @@ void SetupClock(int clock_rate_hz) {
     mbed_die();
   }
 
-  RCC_ClkInitStruct.ClockType      = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+  RCC_ClkInitStruct.ClockType      = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1
+#if defined(TARGET_STM32G4)
+     | RCC_CLOCKTYPE_PCLK2
+#endif
+    );
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+#if defined(TARGET_STM32G4)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_6) != HAL_OK) {
+#elif defined(TARGET_STM32G0)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
+#endif
     mbed_die();
   }
 
@@ -111,8 +127,11 @@ class ClockManager {
       return 85000000;
     }();
 
+#if defined(TARGET_STM32G4)
     SetupClock(can_clock_hz * 2);
-
+#elif defined(TARGET_STM32G0)
+    SetupClock(64000000);
+#endif
     const int32_t trim = std::max<int32_t>(0, std::min<int32_t>(127, clock_.hsitrim));
     RCC->ICSCR = (RCC->ICSCR & ~0xff000000) | (trim << 24);
   }
@@ -151,7 +170,11 @@ class ClockManager {
 }
 
 int main(void) {
+#if defined(TARGET_STM32G4)
   SetupClock(170000000);
+#elif defined(TARGET_STM32G0)
+  SetupClock(64000000);
+#endif
   usb_init_rcc();
 
   DigitalOut power_led{PB_5, 1};
@@ -201,8 +224,13 @@ int main(void) {
       pool, persistent_config, command_manager, write_stream,
       []() {
         fw::CanManager::Options options;
+#if defined(TARGET_STM32G4)
         options.td = PB_13;
         options.rd = PB_12;
+#elif defined(TARGET_STM32G0)
+        options.td = PC_5;
+        options.rd = PC_4;
+#endif
         return options;
       }());
 
