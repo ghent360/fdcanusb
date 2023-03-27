@@ -46,11 +46,20 @@ FDCan::Rate MakeTime(int bitrate, int max_time_seg1, int max_time_seg2) {
 
   result.prescaler = 1;
 
-  uint32_t pclk1 = HAL_RCC_GetPCLK1Freq();
+  uint32_t canclk = 
+#if defined(TRAGET_STM32G4)
+    HAL_RCC_GetPCLK1Freq();
+#elif defined(TARGET_STM32G0)
+    __LL_RCC_CALC_PLLCLK_FDCAN_FREQ(
+      HSI_VALUE,
+      LL_RCC_PLL_GetDivider(),
+      LL_RCC_PLL_GetN(),
+      LL_RCC_PLL_GetQ());
+#endif
   uint32_t total_divisor = 0;
 
   while (true) {
-    total_divisor = (pclk1 / result.prescaler) / bitrate;
+    total_divisor = (canclk / result.prescaler) / bitrate;
 
     // One of the divisor counts comes for free.
     const auto actual_divisor = total_divisor - 1;
@@ -134,7 +143,16 @@ FDCan::FDCan(const Options& options)
   auto fast = ApplyRateOverride(MakeTime(options.fast_bitrate, 31, 15),
                                 options.fdrate_override);
 
-  config_.clock = HAL_RCC_GetPCLK1Freq();
+  config_.clock =
+#if defined(TRAGET_STM32G4)
+    HAL_RCC_GetPCLK1Freq();
+#elif defined(TARGET_STM32G0)
+    __LL_RCC_CALC_PLLCLK_FDCAN_FREQ(
+      HSI_VALUE,
+      LL_RCC_PLL_GetDivider(),
+      LL_RCC_PLL_GetN(),
+      LL_RCC_PLL_GetQ());
+#endif
   config_.nominal = nominal;
   config_.data = fast;
 

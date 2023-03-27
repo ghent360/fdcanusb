@@ -391,7 +391,11 @@ private:
   micro::SizeCallback current_read_callback_;
   mjlib::base::string_span current_read_data_;
 
+#if defined(TARGET_STM32G4)
   DigitalOut led_com_{PB_6};
+#elif defined(TARGET_STM32G0)
+  DigitalOut led_com_{PA_5};
+#endif
 };
 
 Stm32G4AsyncUsbCdc::Impl* Stm32G4AsyncUsbCdc::Impl::g_impl = nullptr;
