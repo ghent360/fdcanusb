@@ -151,7 +151,11 @@ class ClockManager {
     SetupClock(can_clock_hz * 2);
 
     const int32_t trim = std::max<int32_t>(0, std::min<int32_t>(127, clock_.hsitrim));
+#if defined(TARGET_STM32G4)
     RCC->ICSCR = (RCC->ICSCR & ~0xff000000) | (trim << 24);
+#elif defined(TARGET_STM32G0)
+    RCC->ICSCR = (RCC->ICSCR & ~0xff00) | ((trim << 8) & 0xff00);
+#endif
   }
 
   void Command(const std::string_view& command,
@@ -192,7 +196,9 @@ int main(void) {
 
   usb_init_rcc();
 
+#if defined(TARGET_STM32G4)
   DigitalOut power_led{PB_5, 1};
+#endif
 
   fw::MillisecondTimer timer;
 
@@ -200,6 +206,7 @@ int main(void) {
 
   fw::Stm32G4AsyncUsbCdc usb(&pool, {});
 
+#if defined(TARGET_STM32G4)
   fw::Stm32G4AsyncUart uart(
       &pool,
       &timer,
@@ -213,6 +220,7 @@ int main(void) {
 
         return options;
       }());
+#endif
 
   micro::AsyncExclusive<micro::AsyncWriteStream> write_stream(&usb);
   micro::CommandManager command_manager(
@@ -266,7 +274,9 @@ int main(void) {
       const uint32_t now = timer.read_ms();
       if (now - start > 10) { break; }
 
+#if defined(TARGET_STM32G4)
       uart.Poll();
+#endif
       can_manager.Poll();
       usb.Poll();
     }

@@ -172,7 +172,9 @@ class CanManager::Impl {
   }
 
   void UpdateConfig() {
+#if defined(TARGET_STM32G4)
     can_term_.write(config_.termination ? 0 : 1);
+#endif
   }
 
   void Command(const std::string_view& command,
@@ -368,9 +370,11 @@ class CanManager::Impl {
 
     led_tx_.write(1);
 
-    can_->Send(id, std::string_view(data, bytes), opts);
-
-    WriteOK(response);
+    if (can_->Send(id, std::string_view(data, bytes), opts) == FDCan::kSuccess) {
+      WriteOK(response);
+    } else {
+      WriteMessage("ERR send - no space\r\n", response);
+    }
   }
 
   void Command_Status(const micro::CommandManager::Response& response) {
@@ -481,9 +485,11 @@ class CanManager::Impl {
   std::optional<FDCan> can_;
   std::array<FDCan::Filter, kFilterSize> fdcan_filter_ = { {} };
 
+#if defined(TARGET_STM32G4)
   DigitalOut can_stb_{PB_11, 0};
   DigitalOut can_shdn_{PB_15, 0};
   DigitalOut can_term_{PB_14, 0};
+#endif
 
   DigitalOut led_rx_{PB_4, 0};
   DigitalOut led_tx_{PB_3, 0};
