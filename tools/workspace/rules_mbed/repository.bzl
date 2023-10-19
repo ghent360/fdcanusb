@@ -20,7 +20,6 @@ def rules_mbed_repository():
     github_archive(
         name = "com_github_ghent360_rules_mbed",
         repo = "ghent360/rules_mbed",
-        commit = "4a7094b9082625de3b979eae7f5df705cf110695",
-        sha256 = "18335520b479ae6948df2657ca24a0206b93595ae048bbcfef87af5302b2e15e",
-        local_override = "../../nrf24/rules_mbed",
+        commit = "80a3d332c6d93c1cd24f0cc811e21f1bf189aaf6",
+        sha256 = "28d24696dd6c26b48c8d58d4e7c42c5badf930e7da0a4a22b6a19f5ba26f5dd8",
     )
